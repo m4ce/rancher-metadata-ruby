@@ -51,7 +51,7 @@ module RancherMetadata
 
             break
           rescue
-            raise("Failed to query Rancher Metadata API on #{api_url} - Caught exception (#{$!})")
+            STDERR.puts("Failed to query Rancher Metadata API on #{api_url} - Caught exception (#{$!})")
           end
         end
 
