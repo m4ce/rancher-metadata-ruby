@@ -22,7 +22,7 @@ puts("Container Name: #{api.get_container_name}")
 puts("Container Service Name: #{api.get_container_service_name}")
 puts("Container Hostname: #{api.get_container_hostname}")
 
-api.wait_service_containers.each do |container|
+api.wait_service_containers() do |container|
   puts("Container #{container} is up (IP: #{api.get_container_ip(container)}, Index: #{api.get_container_id})")
 end
 

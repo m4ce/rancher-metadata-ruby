@@ -23,11 +23,7 @@ module RancherMetadata
     end
 
     def is_error?(data)
-      if data.is_a?(Hash) and data.has_key?('code') and data['code'] == 404
-        true
-      else
-        false
-      end
+      ( data.is_a?(Hash) and data.has_key?('code') and data['code'] == 404 ) ? true : false
     end
 
     def api_get(query)
@@ -41,7 +37,12 @@ module RancherMetadata
             uri = URI.parse("#{api_url}#{query}")
             req = Net::HTTP::Get.new(uri.path, {'Content-Type' => 'application/json', 'Accept' => 'application/json'})
             resp = Net::HTTP.new(uri.host, uri.port).request(req)
-            data = JSON.parse(resp.body)
+            begin
+              data = JSON.parse(resp.body)
+            rescue JSON::ParserError
+              data = resp.body
+            end
+
             success = true
 
             break
@@ -98,7 +99,7 @@ module RancherMetadata
     end
 
     def get_service_scale_size(service = {})
-      self.get_service_field("scale", service)
+      self.get_service_field("scale", service).to_i
     end
 
     def get_service_containers(service = {})
@@ -146,15 +147,16 @@ module RancherMetadata
     end
 
     def get_container(container_name = nil)
-      name ? self.api_get("/containers/#{container_name}") : self.api_get("/self/container")
+      container_name ? self.api_get("/containers/#{container_name}") : self.api_get("/self/container")
     end
 
     def get_container_field(field, container_name = nil)
-      container_name ? self.api_get("/containers/#{container_name}/#{field}") : self.api_get("/self/container")
+      container_name ? self.api_get("/containers/#{container_name}/#{field}") : self.api_get("/self/container/#{field}")
     end
 
     def get_container_id(container_name = nil)
-     ( i = self.get_container_field("create_index", container_name) ) ? i.to_i : nil
+     i = self.get_container_field("create_index", container_name)
+     i ? i.to_i : nil
     end
 
     def get_container_ip(container_name = nil)
@@ -165,7 +167,7 @@ module RancherMetadata
           self.get_host_ip
         end
       else
-        self.api_get("/containers/#{container_name}/#{primary_ip}")
+        self.api_get("/containers/#{container_name}/primary_ip")
       end
     end
 
@@ -193,6 +195,7 @@ module RancherMetadata
       if service_suffix.nil?
         if (i = self.get_container_name(container_name)[/(\d+)$/, 1])
           index = i.to_i
+        end
       else
         index = service_suffix.to_i
       end
@@ -205,15 +208,15 @@ module RancherMetadata
     end
 
     def is_network_managed?
-      self.get_container_id ?  true : false
+      self.get_container_id ? true : false
     end
 
     def get_host(host_name = nil)
-      host_name ?  self.api_get("/hosts/#{host_name}") : self.api_get("/self/host")
+      host_name ? self.api_get("/hosts/#{host_name}") : self.api_get("/self/host")
     end
 
     def get_host_field(field, host_name = nil)
-      host_name ?  self.api_get("/hosts/#{host_name}/#{field}") : self.api_get("/self/host/#{field}")
+      host_name ? self.api_get("/hosts/#{host_name}/#{field}") : self.api_get("/self/host/#{field}")
     end
 
     def get_host_ip(host_name = nil)
