@@ -1,7 +1,7 @@
 #
 # version.rb
 #
-# Author: Matteo Cerutti <matteo.cerutti@swisscom.com>
+# Author: Matteo Cerutti <matteo.cerutti@hotmail.co.uk>
 #
 
 module RancherMetadata
