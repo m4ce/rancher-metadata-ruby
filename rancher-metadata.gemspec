@@ -17,5 +17,5 @@ Gem::Specification.new do |s|
   s.summary = 'Ruby library that allows to interact with the Rancher Metadata REST API'
   s.version = RancherMetadata.version
 
-  s.add_runtime_dependency 'json', '~> 0'
+  s.add_runtime_dependency 'json', '~> 1.8'
 end
