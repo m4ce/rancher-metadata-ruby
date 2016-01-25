@@ -17,7 +17,11 @@ module RancherMetadata
         :max_attempts => 3
       }
 
-      config[:api_url] = [ config[:api_url] ] unless config[:api_url].is_a?(Array) if config.has_key?(:api_url)
+      if config.has_key?(:api_url)
+        config[:api_url] = [ config[:api_url] ] unless config[:api_url].is_a?(Array)
+
+        raise("Must pass one or more API endpoints") unless config[:api_url].size > 0
+      end
 
       @config = defaults.merge(config)
     end
