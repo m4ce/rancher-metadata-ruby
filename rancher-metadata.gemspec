@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = '<matteo.cerutti@hotmail.co.uk>'
   s.files = Dir.glob('{lib}/**/*') + %w(LICENSE README.md)
   s.require_paths = ["lib"]
-  s.homepage = 'https://github.com/m4ce/ruby-rancher_metadata'
+  s.homepage = 'https://github.com/m4ce/rancher-metadata-ruby'
   s.license = 'Apache 2.0'
   s.summary = 'Ruby library that allows to interact with the Rancher Metadata REST API'
   s.version = RancherMetadata.version
