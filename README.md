@@ -13,7 +13,7 @@ gem install rancher-metadata
 ## Usage
 ```
 require 'rancher-metadata'
-api = RancherMetadata::API.new({:api_url => "http://rancher-metadata/2015-07-25"})
+api = RancherMetadata::API.new({:api_url => "http://rancher-metadata/2015-12-19"})
 
 puts("Container ID: #{api.get_container_id}")
 puts("Container Service ID: #{api.get_container_service_id}")
@@ -22,8 +22,8 @@ puts("Container Name: #{api.get_container_name}")
 puts("Container Service Name: #{api.get_container_service_name}")
 puts("Container Hostname: #{api.get_container_hostname}")
 
-api.wait_service_containers() do |container|
-  puts("Container #{container} is up (IP: #{api.get_container_ip(container)}, Index: #{api.get_container_id})")
+api.wait_service_containers() do |name, container|
+  puts("Container #{name} is up (IP: #{container['primary_ip']}, Index: #{container['create_index']})")
 end
 
 metadata = api.get_service_metadata()
