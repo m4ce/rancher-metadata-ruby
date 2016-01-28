@@ -244,7 +244,7 @@ module RancherMetadata
     end
 
     def is_network_managed?
-      self.get_container_id ? true : false
+      self.get_container_create_index ? true : false
     end
 
     def get_host(host_name = nil)
