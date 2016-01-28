@@ -100,7 +100,16 @@ module RancherMetadata
     end
 
     def get_service_containers(service = {})
-      self.get_service_field("containers", service)
+      containers = {}
+
+      self.get_service_field("containers", service).each do |container|
+        containers[container['name']] = container
+
+        # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
+        containers[container['name']]['service_suffix'] = self.get_container_service_suffix(container['name']) unless container.has_key?('service_suffix')
+      end
+
+      containers
     end
 
     def get_service_metadata(service = {})
@@ -119,8 +128,11 @@ module RancherMetadata
         containers = self.get_service_containers(service)
         new = containers.keys()
 
-        (new - old).each do |n|
-          yield(n, containers[n])
+        (new - old).each do |container_name|
+          # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
+          containers[container_name]['service_suffix'] = self.get_container_service_suffix(container_name) unless containers[container_name].has_key?('service_suffix')
+
+          yield(container_name, containers[container_name])
         end
 
         old = new
@@ -156,7 +168,7 @@ module RancherMetadata
         container = self.api_get("/self/container")
       end
 
-      # FIXME: https://github.com/rancher/cattle/pull/1197
+      # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
       container['service_suffix'] = self.get_container_service_suffix(container_name) unless container.has_key?('service_suffix')
 
       container
@@ -177,6 +189,7 @@ module RancherMetadata
 
     def get_container_ip(container_name = nil)
       if container_name
+      # are we running within the rancher managed network?
         # FIXME: https://github.com/rancher/rancher/issues/2750
         if self.is_network_managed?
           self.api_get("/self/container/primary_ip")
