@@ -5,7 +5,7 @@
 #
 
 module RancherMetadata
-  VERSION = "0.17.2"
+  VERSION = "0.17.3"
 
   def self.version
     VERSION
