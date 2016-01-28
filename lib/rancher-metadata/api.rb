@@ -128,11 +128,11 @@ module RancherMetadata
         containers = self.get_service_containers(service)
         new = containers.keys()
 
-        (new - old).each do |container_name|
+        (new - old).each do |name|
           # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
-          containers[container_name]['service_suffix'] = self.get_container_service_suffix(container_name) unless containers[container_name].has_key?('service_suffix')
+          containers[name]['service_suffix'] = self.get_container_service_suffix(name) unless containers[name].has_key?('service_suffix')
 
-          yield(container_name, containers[container_name])
+          yield(name, containers[name])
         end
 
         old = new
@@ -169,7 +169,9 @@ module RancherMetadata
       end
 
       # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
-      container['service_suffix'] = self.get_container_service_suffix(container_name) unless container.has_key?('service_suffix')
+      if container
+        container['service_suffix'] = self.get_container_service_suffix(container_name) unless container.has_key?('service_suffix')
+      end
 
       container
     end
