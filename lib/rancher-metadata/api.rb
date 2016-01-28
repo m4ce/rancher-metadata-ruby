@@ -13,7 +13,7 @@ module RancherMetadata
 
     def initialize(config)
       defaults = {
-        :api_url => ["http://rancher-metadata/2015-07-25"],
+        :api_url => ["http://rancher-metadata/2015-12-19"],
         :max_attempts => 3
       }
 
@@ -74,11 +74,9 @@ module RancherMetadata
         raise("Missing rancher service name") unless service.has_key?(:service_name)
 
         unless service.has_key?(:stack_name)
-          return self.api_get("/services/#{service[:service_name]}")
+          return self.api_get("/self/stack/services/#{service[:service_name]}")
         else
-          self.get_services().each do |s|
-            return s if s['stack_name'] == service[:stack_name] and s['name'] == service[:service_name]
-          end
+          return self.api_get("/stacks/#{service[:stack_name]}/services/#{service[:service_name]}")
         end
       end
     end
@@ -87,17 +85,12 @@ module RancherMetadata
       if service.empty?
         return self.api_get("/self/service/#{field}")
       else
-        raise("Missing rancher service name") unless service.has_key?(:service_name)
+        raise("Must provide service name") unless service.has_key?(:service_name)
 
         unless service.has_key?(:stack_name)
-          return self.api_get("/services/#{service[:service_name]}/#{field}")
+          return self.api_get("/self/stack/services/#{service[:service_name]}/#{field}")
         else
-          s = self.get_service(service)
-          if s.has_key?(field)
-            return s[field]
-          else
-            return nil
-          end
+          return self.api_get("/stacks/#{service[:stack_name]}/services/#{service[:service_name]}/#{field}")
         end
       end
     end
@@ -121,18 +114,18 @@ module RancherMetadata
     def wait_service_containers(service = {})
       scale = self.get_service_scale_size(service)
 
-      containers = []
-
+      old = []
       loop do
-        c = self.get_service_containers(service)
+        containers = self.get_service_containers(service)
+        new = containers.keys()
 
-        (c - containers).each do |n|
-          yield(n)
+        (new - old).each do |n|
+          yield(n, containers[n])
         end
 
-        containers = c
+        old = new
 
-        break if containers.size >= scale
+        break if new.size >= scale
 
         sleep(0.5)
       end
@@ -144,6 +137,10 @@ module RancherMetadata
 
     def get_stack(stack_name = nil)
       stack_name ? self.api_get("/stacks/#{stack_name}") : self.api_get("/self/stack")
+    end
+
+    def get_stack_services(stack_name = nil)
+      stack_name ? self.api_get("/stacks/#{stack_name}/services") : self.api_get("/self/stack/services")
     end
 
     def get_containers
