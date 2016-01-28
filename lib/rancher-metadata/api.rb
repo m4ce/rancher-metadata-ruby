@@ -156,6 +156,10 @@ module RancherMetadata
     end
 
     def get_container_id(container_name = nil)
+      self.get_container_create_index(container_name)
+    end
+
+    def get_container_create_index(container_name = nil)
      i = self.get_container_field("create_index", container_name)
      i ? i.to_i : nil
     end
@@ -189,6 +193,10 @@ module RancherMetadata
     end
 
     def get_container_service_id(container_name = nil)
+      self.get_container_service_suffix(container_name)
+    end
+
+    def get_container_service_suffix(container_name = nil)
       index = nil
 
       service_suffix = self.get_container_field("service_suffix", container_name)
