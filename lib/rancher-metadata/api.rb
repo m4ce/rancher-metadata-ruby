@@ -148,7 +148,18 @@ module RancherMetadata
     end
 
     def get_container(container_name = nil)
-      container_name ? self.api_get("/containers/#{container_name}") : self.api_get("/self/container")
+      container = nil
+
+      if container_name
+        container = self.api_get("/containers/#{container_name}")
+      else
+        container = self.api_get("/self/container")
+      end
+
+      # FIXME: https://github.com/rancher/cattle/pull/1197
+      container['service_suffix'] = self.get_container_service_suffix(container_name) unless container.has_key?('service_suffix')
+
+      container
     end
 
     def get_container_field(field, container_name = nil)
@@ -166,6 +177,7 @@ module RancherMetadata
 
     def get_container_ip(container_name = nil)
       if container_name
+        # FIXME: https://github.com/rancher/rancher/issues/2750
         if self.is_network_managed?
           self.api_get("/self/container/primary_ip")
         else

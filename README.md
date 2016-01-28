@@ -23,7 +23,7 @@ puts("Container service name: #{api.get_container_service_name}")
 puts("Container hostname: #{api.get_container_hostname}")
 
 api.wait_service_containers() do |name, container|
-  puts("Container #{name} is up (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{api.get_container_service_suffix(name))")
+  puts("Container #{name} is up (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
 end
 
 metadata = api.get_service_metadata
