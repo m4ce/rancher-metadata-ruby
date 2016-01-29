@@ -90,14 +90,14 @@ Look up a specific service running in another stack:
 puts(api.get_service({:service_name => 'my_service', :stack_name => 'my_stack'}).inspect)
 ```
 
-look up the current service's containers
+Look up the current service's containers
 ```
 api.get_service_containers.each do |name, container|
   puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
 end
 ```
 
-look up a specific service's containers running in the current stack:
+Look up a specific service's containers running in the current stack:
 ```
 api.get_service_containers({:service_name => 'my_service'}).each do |name, container|
   puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
