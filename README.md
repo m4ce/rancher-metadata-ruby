@@ -22,7 +22,7 @@ puts("Container name: #{api.get_container_name}")
 puts("Container service name: #{api.get_container_service_name}")
 puts("Container hostname: #{api.get_container_hostname}")
 
-api.wait_service_containers() do |name, container|
+api.wait_service_containers do |name, container|
   puts("Container #{name} is up (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
 end
 
@@ -90,17 +90,24 @@ Look up a specific service running in another stack:
 puts(api.get_service({:service_name => 'my_service', :stack_name => 'my_stack'}).inspect)
 ```
 
+look up the current service's containers
+```
+api.get_service_containers.each do |name, container|
+  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
+end
+```
+
 look up a specific service's containers running in the current stack:
 ```
-api.get_service_containers({:service_name => 'my_service'}).each do |container|
-  puts(container.inspect)
+api.get_service_containers({:service_name => 'my_service'}).each do |name, container|
+  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
 end
 ```
 
 Look up a specific service's containers running in an another stack:
 ```
-api.get_service_containers({:service_name => 'my_service', :stack_name => 'my_stack'}).each do |container|
-  puts(container.inspect)
+api.get_service_containers({:service_name => 'my_service', :stack_name => 'my_stack'}).each do |name, container|
+  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
 end
 ```
 
