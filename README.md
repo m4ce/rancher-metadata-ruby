@@ -16,14 +16,14 @@ require 'rancher-metadata'
 api = RancherMetadata::API.new({:api_url => "http://rancher-metadata/2015-12-19"})
 
 puts("Container create index: #{api.get_container_create_index}")
-puts("Container service suffix: #{api.get_container_service_suffix}")
+puts("Container service index: #{api.get_container_service_index}")
 puts("Container ip: #{api.get_container_ip}")
 puts("Container name: #{api.get_container_name}")
 puts("Container service name: #{api.get_container_service_name}")
 puts("Container hostname: #{api.get_container_hostname}")
 
 api.wait_service_containers do |name, container|
-  puts("Container #{name} is up (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
+  puts("Container #{name} is up (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service index: #{container['service_index']})")
 end
 
 metadata = api.get_service_metadata
@@ -93,21 +93,21 @@ puts(api.get_service({:service_name => 'my_service', :stack_name => 'my_stack'})
 Look up the current service's containers
 ```
 api.get_service_containers.each do |name, container|
-  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
+  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service index: #{container['service_index']})")
 end
 ```
 
 Look up a specific service's containers running in the current stack:
 ```
 api.get_service_containers({:service_name => 'my_service'}).each do |name, container|
-  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
+  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service index: #{container['service_index']})")
 end
 ```
 
 Look up a specific service's containers running in an another stack:
 ```
 api.get_service_containers({:service_name => 'my_service', :stack_name => 'my_stack'}).each do |name, container|
-  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service suffix: #{container['service_suffix']})")
+  puts("Container #{name} (ip: #{container['primary_ip']}, create index: #{container['create_index']}, service index: #{container['service_index']})")
 end
 ```
 

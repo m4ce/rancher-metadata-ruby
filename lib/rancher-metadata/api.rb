@@ -104,9 +104,6 @@ module RancherMetadata
 
       self.get_service_field("containers", service).each do |container|
         containers[container['name']] = container
-
-        # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
-        containers[container['name']]['service_suffix'] = self.get_container_service_suffix(container['name']) unless container.has_key?('service_suffix')
       end
 
       containers
@@ -129,9 +126,6 @@ module RancherMetadata
         new = containers.keys()
 
         (new - old).each do |name|
-          # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
-          containers[name]['service_suffix'] = self.get_container_service_suffix(name) unless containers[name].has_key?('service_suffix')
-
           yield(name, containers[name])
         end
 
@@ -168,20 +162,11 @@ module RancherMetadata
         container = self.api_get("/self/container")
       end
 
-      # FIXME: until https://github.com/rancher/cattle/pull/1197 gets merged
-      if container
-        container['service_suffix'] = self.get_container_service_suffix(container_name) unless container.has_key?('service_suffix')
-      end
-
       container
     end
 
     def get_container_field(field, container_name = nil)
       container_name ? self.api_get("/containers/#{container_name}/#{field}") : self.api_get("/self/container/#{field}")
-    end
-
-    def get_container_id(container_name = nil)
-      self.get_container_create_index(container_name)
     end
 
     def get_container_create_index(container_name = nil)
@@ -219,24 +204,9 @@ module RancherMetadata
       self.get_container_field("hostname", container_name)
     end
 
-    def get_container_service_id(container_name = nil)
-      self.get_container_service_suffix(container_name)
-    end
-
-    def get_container_service_suffix(container_name = nil)
-      index = nil
-
-      service_suffix = self.get_container_field("service_suffix", container_name)
-
-      if service_suffix.nil?
-        if (i = self.get_container_name(container_name)[/(\d+)$/, 1])
-          index = i.to_i
-        end
-      else
-        index = service_suffix.to_i
-      end
-
-      index
+    def get_container_service_index(container_name = nil)
+     i = self.get_container_field("service_index", container_name)
+     i ? i.to_i : nil
     end
 
     def get_container_host_uuid(container_name = nil)
