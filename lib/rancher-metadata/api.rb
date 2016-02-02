@@ -103,6 +103,9 @@ module RancherMetadata
       containers = {}
 
       self.get_service_field("containers", service).each do |container|
+        container['create_index'] = container['create_index'].to_i if (container.has_key?('create_index') and container['create_index'].is_a?(String))
+        container['service_index'] = container['service_index'].to_i if (container.has_key?('service_index') and container['service_index'].is_a?(String))
+
         containers[container['name']] = container
       end
 
@@ -150,7 +153,16 @@ module RancherMetadata
     end
 
     def get_containers
-      self.api_get("/containers")
+      containers = []
+
+      self.api_get("/containers").each do |container|
+        container['create_index'] = container['create_index'].to_i if (container.has_key?('create_index') and container['create_index'].is_a?(String))
+        container['service_index'] = container['service_index'].to_i if (container.has_key?('service_index') and container['service_index'].is_a?(String))
+
+        containers << container
+      end
+
+      containers
     end
 
     def get_container(container_name = nil)
@@ -161,6 +173,9 @@ module RancherMetadata
       else
         container = self.api_get("/self/container")
       end
+
+      container['create_index'] = container['create_index'].to_i if (container.has_key?('create_index') and container['create_index'].is_a?(String))
+      container['service_index'] = container['service_index'].to_i if (container.has_key?('service_index') and container['service_index'].is_a?(String))
 
       container
     end
